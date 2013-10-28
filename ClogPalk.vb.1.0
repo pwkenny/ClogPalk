@@ -1,0 +1,90 @@
+#  Vector bindings for ClogPalk.param.01 parameter file
+#  Peter W. Kenny, IQSC-USP, 17-May-2013
+#
+#  This vector binding file is provided as supporting information for:
+#  PW Kenny, CA Montanari, IM Prokopcyk (2013) ClogPalk: A method for 
+#  predicting alkane/water partition coefficient. JCAMD 27:*-*  
+#  (If citing please consult journal for page numbers) 
+#
+#-----------------------------------------------------------------
+#  Saturated carbon 
+Csp3            [CX4]
+#-----------------------------------------------------------------
+#  Unsaturated carbon 
+#  Used with a number of carbonyl group definitions (e.g amides)
+Cnotsp3         [#6;!$Csp3]
+#-----------------------------------------------------------------
+#  Aromatic atoms
+#  In some structures (e.g. 2-pyridone) carbonyl carbon atoms can
+#  be typed as aromatic and it is useful to define an aromatic 
+#  carbon atom type that excludes atoms like these.  Also useful
+#  to combine these with doubly-connected aromatic nitrogen.  
+CDoubBond      c=[C,N,O,S]
+ArC            [c;!$CDoubBond]
+ArN            [n&D2]
+ArCN           [$ArC,$ArN]
+#----------------------------------------------------------------
+#  Triply-connected Nitrogen or doubly connected oxygen or sulfur
+#  in 5-membered heteroaromatic rings (e.g pyrrole, thiazole)
+ArNH           [nH]1[$ArCN][$ArCN][$ArCN][$ArCN]1
+ArNR           n1([#6])[$ArCN][$ArCN][$ArCN][$ArCN]1
+ArO            o1[$ArCN][$ArCN][$ArCN][$ArCN]1
+ArS            s1[$ArCN][$ArCN][$ArCN][$ArCN]1
+#-----------------------------------------------------------------
+#  Doubly-bonded oxygen or sulfur
+#
+#  Data for ureas and thioureas suggests that the appropriate
+#  functional group increment is very similar.  Accordingly all 
+#  thiocarbonyl parameters are set to the corresponding c
+#  carbonyl parameters by defining an oxygen or sulfur atom type
+OS             [O,S;X1]
+#-----------------------------------------------------------------
+#  Generalised amino group, amine & aliphatic ether definitions
+#
+NH2            [N;H2;X3]
+NHR            [N;H1;X3][$Csp3]
+NR2            [NX3]([$Csp3])[$Csp3]
+GenAmino       [$NH2,$NHR,$NR2]
+PrimAmine      [$NH2][$Csp3]
+SecAmine       [$NHR]([$Csp3])[$Csp3]
+TertAmine      [$NR2]([$Csp3])([$Csp3])[$Csp3]
+Amine          [$PrimAmine,$SecAmine,$TertAmine]
+Ether          O([$Csp3])[$Csp3]
+#-----------------------------------------------------------------
+#  Hypervalent nitrogen and sulfonyl
+#
+Nitro1         N(=O)=O
+Nitro2         [N+]([O-])=O
+Nitro          [$Nitro1,$Nitro2]
+ArNoxid1       [nX3]=O
+ArNoxid2       [n;+;X3][O-]
+ArNoxid        [$ArNoxid1,$ArNoxid2]
+AlNoxid1       [NX4]=O
+AlNoxid2       [N;X4;+][O-]          
+AlNoxid        [$AlNoxid1,$AlNoxid2]
+SO2            [SX4](=O)(=O)([$Csp3])[$Csp3,N&X3]
+#------------------------------------------------------------------   
+#  Electron-withdrawing group
+#  Primarily to deal with imides
+EWG1           [C,S]=[N,O,S]
+#------------------------------------------------------------------
+#  A couple of hydrogen bond donor definitions...
+HBD            [O&H,n&H,$([NH][C,S]=O),$([N;H,H2]c)]
+HBD2           [$HBD;!$(N1CC(=O)AC1=O)]
+#------------------------------------------------------------------
+#  This defines 4-aminopyridines and aza analogs
+Am4Pyr    [$ArN]1[$ArCN][$ArCN]c([$GenAmino])[$ArC][$ArC]1
+#------------------------------------------------------------------
+#  For applying the benzyl correction
+BenzylCorrect     [$Amine,O&!H][$Csp3][$Cnotsp3]
+#------------------------------------------------------------------
+#  For identifying intramolecular hydrogen bonds to amines.  One 
+#  problem is that these cannot form for certain cyclic species  
+#  First we define attachment points in pyrrolidine and piperidine
+CyAmine         [$(C1CNCC1),$(C1CNCCC1),$(C1CCNCC1)]
+#------------------------------------------------------------------
+#  target and the parameter value has been set to take account of
+#  multiple matches  
+NOCCNO          [$Amine,$Ether][$Csp3][$Csp3][N,$Ether]
+NOCNO           [$Amine,O&!H][$Csp3][N,O]
+#------------------------------------------------------------------------
